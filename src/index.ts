@@ -2,6 +2,7 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { resolvers } from "../graphQL/resolvers/index.js";
 import { typeDefs } from "../graphQL/typeDefs.js";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -12,7 +13,11 @@ const startServer = async () => {
       resolvers,
     });
 
+    await mongoose.connect(process.env.MONGODB);
+    console.log(`🚀🚀 MongoDB Connected 🚀🚀`);
+
     const { url } = await startStandaloneServer(server, {
+      context: async ({ req, res }) => ({ req, res }),
       listen: { port: 4040 },
     });
 
